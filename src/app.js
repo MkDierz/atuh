@@ -90,17 +90,33 @@ function logout(req, res) {
   tokenBlacklist.addBlacklist(refreshToken);
   return res.send({ message: 'User logged out' });
 }
+// TODO add username field
 
-const authFields = [
-  body('email').isEmail().withMessage('valid email required'),
-  body('password').isLength({ min: 6 }).withMessage('minimum password length is 6 characters'),
-];
+const emailField = body('email')
+  .notEmpty()
+  .withMessage('email required')
+  .isEmail()
+  .withMessage('valid email required');
+const usernameField = body('username')
+  .trim()
+  .notEmpty()
+  .withMessage('username required')
+  .custom((value) => !/\s/.test(value))
+  .withMessage('No spaces are allowed in the username')
+  .isLength({ min: 4, max: 24 })
+  .withMessage('username must be between 4 and 24 characters')
+  .isAlphanumeric()
+  .withMessage('username must not contain special characters');
+const passwordField = body('password').isLength({ min: 6 }).withMessage('minimum password length is 6 characters');
 const accessTokenField = body('accessToken').notEmpty().withMessage('accessToken required');
 const refreshTokenField = body('refreshToken').notEmpty().withMessage('refreshToken required');
+
+const registerField = [emailField, usernameField, passwordField];
+const loginField = [emailField, passwordField];
 const logoutFields = [accessTokenField, refreshTokenField];
 
-router.post('/register', authFields, errorHandler.validation, register);
-router.post('/login', authFields, errorHandler.validation, login);
+router.post('/register', registerField, errorHandler.validation, register);
+router.post('/login', loginField, errorHandler.validation, login);
 router.post('/verify-token', accessTokenField, errorHandler.validation, verifyAccessTokenHandler);
 router.post('/refresh-token', refreshTokenField, errorHandler.validation, refreshTokenHandler);
 router.post('/logout', logoutFields, errorHandler.validation, logout);
