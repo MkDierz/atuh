@@ -90,7 +90,30 @@ function logout(req, res) {
   tokenBlacklist.addBlacklist(refreshToken);
   return res.send({ message: 'User logged out' });
 }
-// TODO add username field
+
+async function emailAvailability(req, res) {
+  const { email } = req.body;
+
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  if (!user) {
+    return res.sendStatus(204);
+  }
+
+  return res.sendStatus(200);
+}
+
+async function usernameAvailability(req, res) {
+  const { username } = req.body;
+
+  const user = await prisma.user.findUnique({ where: { username } });
+
+  if (!user) {
+    return res.sendStatus(204);
+  }
+
+  return res.sendStatus(200);
+}
 
 const emailField = body('email')
   .notEmpty()
@@ -120,5 +143,7 @@ router.post('/login', loginField, errorHandler.validation, login);
 router.post('/verify-token', accessTokenField, errorHandler.validation, verifyAccessTokenHandler);
 router.post('/refresh-token', refreshTokenField, errorHandler.validation, refreshTokenHandler);
 router.post('/logout', logoutFields, errorHandler.validation, logout);
+router.post('/availability/email', emailField, errorHandler.validation, emailAvailability);
+router.post('/availability/username', usernameField, errorHandler.validation, usernameAvailability);
 
 module.exports = router;
