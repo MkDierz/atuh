@@ -1,24 +1,12 @@
 const { PrismaClient } = require('@prisma/client');
-const { Router } = require('express');
 const { hashSync, compareSync } = require('bcryptjs');
 const { httpError } = require('../config');
 const { signToken, verifyAccessToken, verifyRefreshToken } = require('../utils/jwt');
 const { tokenBlacklist } = require('../utils/tokenBlacklist');
 const errorHandler = require('../utils/errorHandler');
 const { exclude } = require('../utils/dro');
-const {
-  registerField,
-  loginField,
-  accessTokenField,
-  refreshTokenField,
-  logoutFields,
-  emailField,
-  usernameField,
-  updateField,
-} = require('../utils/validator');
 
 const prisma = new PrismaClient();
-const router = Router();
 
 async function register(req, res, next) {
   const data = { ...req.body };
@@ -117,13 +105,12 @@ async function usernameAvailability(req, res) {
   return res.sendStatus(200);
 }
 
-router.post('/register', registerField, errorHandler.validation, register);
-router.post('/login', loginField, errorHandler.validation, login);
-router.post('/verify-token', accessTokenField, errorHandler.validation, verifyAccessTokenHandler);
-router.post('/refresh-token', refreshTokenField, errorHandler.validation, refreshTokenHandler);
-router.post('/logout', logoutFields, errorHandler.validation, logout);
-router.post('/availability/email', emailField, errorHandler.validation, emailAvailability);
-router.post('/availability/username', usernameField, errorHandler.validation, usernameAvailability);
-router.put('/update', updateField, errorHandler.validation, usernameAvailability);
-
-module.exports = router;
+module.exports = {
+  register,
+  login,
+  verifyAccessTokenHandler,
+  refreshTokenHandler,
+  logout,
+  emailAvailability,
+  usernameAvailability,
+};
