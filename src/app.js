@@ -1,22 +1,24 @@
 const { PrismaClient } = require('@prisma/client');
 const { Router } = require('express');
-const { body } = require('express-validator');
 const { hashSync, compareSync } = require('bcryptjs');
 const { httpError } = require('../config');
 const { signToken, verifyAccessToken, verifyRefreshToken } = require('../utils/jwt');
 const { tokenBlacklist } = require('../utils/tokenBlacklist');
 const errorHandler = require('../utils/errorHandler');
+const { exclude } = require('../utils/dro');
+const {
+  registerField,
+  loginField,
+  accessTokenField,
+  refreshTokenField,
+  logoutFields,
+  emailField,
+  usernameField,
+  updateField,
+} = require('../utils/validator');
 
 const prisma = new PrismaClient();
 const router = Router();
-
-function exclude(data, keys) {
-  const returnValue = { ...data };
-  keys.forEach((key) => {
-    delete returnValue[key];
-  });
-  return returnValue;
-}
 
 async function register(req, res, next) {
   const data = { ...req.body };
@@ -115,29 +117,6 @@ async function usernameAvailability(req, res) {
   return res.sendStatus(200);
 }
 
-const emailField = body('email')
-  .notEmpty()
-  .withMessage('email required')
-  .isEmail()
-  .withMessage('valid email required');
-const usernameField = body('username')
-  .trim()
-  .notEmpty()
-  .withMessage('username required')
-  .custom((value) => !/\s/.test(value))
-  .withMessage('No spaces are allowed in the username')
-  .isLength({ min: 4, max: 24 })
-  .withMessage('username must be between 4 and 24 characters')
-  .isAlphanumeric()
-  .withMessage('username must not contain special characters');
-const passwordField = body('password').isLength({ min: 6 }).withMessage('minimum password length is 6 characters');
-const accessTokenField = body('accessToken').notEmpty().withMessage('accessToken required');
-const refreshTokenField = body('refreshToken').notEmpty().withMessage('refreshToken required');
-
-const registerField = [emailField, usernameField, passwordField];
-const loginField = [emailField, passwordField];
-const logoutFields = [accessTokenField, refreshTokenField];
-
 router.post('/register', registerField, errorHandler.validation, register);
 router.post('/login', loginField, errorHandler.validation, login);
 router.post('/verify-token', accessTokenField, errorHandler.validation, verifyAccessTokenHandler);
@@ -145,5 +124,6 @@ router.post('/refresh-token', refreshTokenField, errorHandler.validation, refres
 router.post('/logout', logoutFields, errorHandler.validation, logout);
 router.post('/availability/email', emailField, errorHandler.validation, emailAvailability);
 router.post('/availability/username', usernameField, errorHandler.validation, usernameAvailability);
+router.put('/update', updateField, errorHandler.validation, usernameAvailability);
 
 module.exports = router;
