@@ -18,6 +18,7 @@ const {
   logout,
   emailAvailability,
   usernameAvailability,
+  update,
 } = require('./app');
 
 const router = Router();
@@ -29,6 +30,6 @@ router.post('/refresh-token', refreshTokenField, errorHandler.validation, refres
 router.post('/logout', logoutFields, errorHandler.validation, logout);
 router.post('/availability/email', emailField, errorHandler.validation, emailAvailability);
 router.post('/availability/username', usernameField, errorHandler.validation, usernameAvailability);
-router.put('/update', updateField, errorHandler.validation, usernameAvailability);
+router.put('/update', updateField, errorHandler.validation, update);
 
 module.exports = router;

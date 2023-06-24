@@ -6,6 +6,17 @@ function exclude(data, keys) {
   return returnValue;
 }
 
+function clean(data) {
+  const obj = { ...data };
+  Object.keys(obj).forEach((key) => {
+    if ((obj[key] === null) || (obj[key] === undefined)) {
+      delete obj[key];
+    }
+  });
+  return obj;
+}
+
 module.exports = {
   exclude,
+  clean,
 };

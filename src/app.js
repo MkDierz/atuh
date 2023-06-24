@@ -4,7 +4,7 @@ const { httpError } = require('../config');
 const { signToken, verifyAccessToken, verifyRefreshToken } = require('../utils/jwt');
 const { tokenBlacklist } = require('../utils/tokenBlacklist');
 const errorHandler = require('../utils/errorHandler');
-const { exclude } = require('../utils/dro');
+const { exclude, clean } = require('../utils/dro');
 
 const prisma = new PrismaClient();
 
@@ -105,6 +105,28 @@ async function usernameAvailability(req, res) {
   return res.sendStatus(200);
 }
 
+async function update(req, res, next) {
+  const data = clean({ ...req.body });
+  const { authorization } = req.headers;
+  const accessToken = authorization.split(' ')[1];
+  const result = verifyAccessToken(accessToken);
+  if (result instanceof httpError.HttpError) {
+    return next(result);
+  }
+  if ('password' in data) {
+    data.password = hashSync(data.password, 8);
+  }
+  const user = Object({});
+  try {
+    user.update = exclude(await prisma.user.update({ data, where: { id: result.id } }), ['password']);
+  } catch (e) {
+    const errorMessage = errorHandler.prisma(e);
+    return next(httpError.Conflict({ detail: errorMessage, field: e.meta.target }));
+  }
+
+  return res.send(user.update);
+}
+
 module.exports = {
   register,
   login,
@@ -113,4 +135,5 @@ module.exports = {
   logout,
   emailAvailability,
   usernameAvailability,
+  update,
 };

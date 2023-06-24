@@ -8,6 +8,10 @@ function validation(req, res, next) {
     message: error.msg,
   });
   const result = validationResult(req).formatWith(errorFormatter);
+  if (result.array().filter((e) => e.field === 'authorization').length > 0) {
+    /* vendors contains the element we're looking for */
+    return next(httpError.Unauthorized());
+  }
   if (!result.isEmpty()) {
     return next(httpError.UnprocessableEntity(result.array()));
   }
