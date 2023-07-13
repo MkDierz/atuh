@@ -1,4 +1,4 @@
-const { body, header } = require('express-validator');
+const { body, header, query } = require('express-validator');
 
 const emailField = body('email')
   .notEmpty()
@@ -16,7 +16,7 @@ const usernameField = body('username')
   .isAlphanumeric()
   .withMessage('username must not contain special characters');
 const passwordField = body('password').isLength({ min: 6 }).withMessage('minimum password length is 6 characters');
-const accessTokenField = body('accessToken').notEmpty().withMessage('accessToken required');
+const accessTokenField = query('accessToken').notEmpty().withMessage('accessToken required');
 const refreshTokenField = body('refreshToken').notEmpty().withMessage('refreshToken required');
 const authHeader = header('Authorization').notEmpty().withMessage('Authorization required');
 

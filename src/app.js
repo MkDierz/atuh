@@ -40,7 +40,7 @@ async function login(req, res, next) {
 }
 
 function verifyAccessTokenHandler(req, res, next) {
-  const { accessToken } = req.body;
+  const { accessToken } = req.query;
 
   if (tokenBlacklist.getBlacklist().includes(accessToken)) {
     return next(httpError.Unauthorized('Invalid credentials'));
