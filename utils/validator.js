@@ -1,11 +1,13 @@
 const { body, header, query } = require('express-validator');
 
-const emailField = body('email')
+const emailField = () => body('email')
+  .exists()
   .notEmpty()
   .withMessage('email required')
   .isEmail()
-  .withMessage('valid email required');
-const usernameField = body('username')
+  .withMessage('valid email required')
+  .bail();
+const usernameField = () => body('username')
   .trim()
   .notEmpty()
   .withMessage('username required')
@@ -15,18 +17,18 @@ const usernameField = body('username')
   .withMessage('username must be between 4 and 24 characters')
   .isAlphanumeric()
   .withMessage('username must not contain special characters');
-const passwordField = body('password').isLength({ min: 6 }).withMessage('minimum password length is 6 characters');
+const passwordField = () => body('password').isLength({ min: 6 }).withMessage('minimum password length is 6 characters');
 const accessTokenField = query('accessToken').notEmpty().withMessage('accessToken required');
 const refreshTokenField = body('refreshToken').notEmpty().withMessage('refreshToken required');
 const authHeader = header('Authorization').notEmpty().withMessage('Authorization required');
 
-const registerField = [emailField, usernameField, passwordField];
-const loginField = [emailField, passwordField];
+const registerField = [emailField(), usernameField(), passwordField()];
+const loginField = [emailField(), passwordField()];
 const logoutFields = [accessTokenField, refreshTokenField];
 const updateField = [
-  emailField.optional(),
-  usernameField.optional(),
-  passwordField.optional(),
+  emailField().optional(),
+  usernameField().optional(),
+  passwordField().optional(),
   authHeader,
 ];
 

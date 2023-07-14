@@ -28,8 +28,8 @@ router.post('/login', loginField, errorHandler.validation, login);
 router.get('/verify-token', accessTokenField, errorHandler.validation, verifyAccessTokenHandler);
 router.post('/refresh-token', refreshTokenField, errorHandler.validation, refreshTokenHandler);
 router.post('/logout', logoutFields, errorHandler.validation, logout);
-router.post('/availability/email', emailField, errorHandler.validation, emailAvailability);
-router.post('/availability/username', usernameField, errorHandler.validation, usernameAvailability);
+router.post('/availability/email', emailField(), errorHandler.validation, emailAvailability);
+router.post('/availability/username', usernameField(), errorHandler.validation, usernameAvailability);
 router.put('/update', updateField, errorHandler.validation, update);
 
 module.exports = router;
