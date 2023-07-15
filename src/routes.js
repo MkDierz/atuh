@@ -3,7 +3,7 @@ const errorHandler = require('../utils/errorHandler');
 const {
   registerField,
   loginField,
-  accessTokenField,
+  accessTokenQuery,
   refreshTokenField,
   logoutFields,
   emailField,
@@ -25,7 +25,7 @@ const router = Router();
 
 router.post('/register', registerField, errorHandler.validation, register);
 router.post('/login', loginField, errorHandler.validation, login);
-router.get('/verify-token', accessTokenField, errorHandler.validation, verifyAccessTokenHandler);
+router.get('/verify-token', accessTokenQuery, errorHandler.validation, verifyAccessTokenHandler);
 router.post('/refresh-token', refreshTokenField, errorHandler.validation, refreshTokenHandler);
 router.post('/logout', logoutFields, errorHandler.validation, logout);
 router.post('/availability/email', emailField(), errorHandler.validation, emailAvailability);

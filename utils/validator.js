@@ -18,7 +18,8 @@ const usernameField = () => body('username')
   .isAlphanumeric()
   .withMessage('username must not contain special characters');
 const passwordField = () => body('password').isLength({ min: 6 }).withMessage('minimum password length is 6 characters');
-const accessTokenField = query('accessToken').notEmpty().withMessage('accessToken required');
+const accessTokenQuery = query('accessToken').notEmpty().withMessage('accessToken required');
+const accessTokenField = body('accessToken').notEmpty().withMessage('accessToken required');
 const refreshTokenField = body('refreshToken').notEmpty().withMessage('refreshToken required');
 const authHeader = header('Authorization').notEmpty().withMessage('Authorization required');
 
@@ -38,6 +39,7 @@ module.exports = {
   logoutFields,
   updateField,
   accessTokenField,
+  accessTokenQuery,
   refreshTokenField,
   emailField,
   usernameField,
