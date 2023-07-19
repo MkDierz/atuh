@@ -116,7 +116,7 @@ async function update(req, res, next) {
   if ('password' in data) {
     data.password = hashSync(data.password, 8);
   }
-  const user = Object({});
+  const user = {};
   try {
     user.update = exclude(await prisma.user.update({ data, where: { id: result.id } }), ['password']);
   } catch (e) {
