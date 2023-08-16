@@ -35,6 +35,7 @@
     "prisma": "^4.15.0"
   },
   "dependencies": {
+    "@mkdierz/json-compressor": "^1.1.0",
     "@prisma/client": "^4.15.0",
     "bcryptjs": "^2.4.3",
     "debug": "^4.3.4",
